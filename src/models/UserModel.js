@@ -12,6 +12,14 @@ const userSchema = new mongoose.Schema({
   role: {
     type: String,
     required: [true, 'Role is not be empty']
+  },
+  age: {
+    type: Number
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now(),
+    select: false
   }
 });
 
