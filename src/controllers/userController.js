@@ -1,23 +1,5 @@
 const User = require('../models/UserModel');
-
-class GetApiFeature {
-  constructor(query, queryString) {
-    this.query = query;
-    this.queryString = queryString;
-  }
-
-  buildQuery(){
-    const queryObj = { ...this.queryString };
-    const removeField = ['page', 'sort', 'limit', 'fields'];
-    removeField.forEach(el => delete queryObj[el]);
-
-    let queryStr = JSON.stringify(queryObj);
-    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
-    console.log(JSON.parse(queryStr));
-
-    this.query.find(JSON.parse(queryStr))
-  }
-}
+const QueryTool = require('../utils/QueryTool');
 
 // aliasing
 exports.topRec = (req, res, next) => {
@@ -29,44 +11,11 @@ exports.topRec = (req, res, next) => {
 };
 exports.getAllUser = async (req, res, next) => {
   try {
-    const queryObj = { ...req.query };
-    const removeField = ['page', 'sort', 'limit', 'fields'];
-    removeField.forEach(el => delete queryObj[el]);
-
-    let queryStr = JSON.stringify(queryObj);
-    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
-    console.log(JSON.parse(queryStr));
-
-    let query = User.find(JSON.parse(queryStr));
-
-    if (req.query.sort) {
-      query = query.sort(req.query.sort);
-    } else {
-      // query = query.sort('-createdAt');
-    }
-
-    if (req.query.fields) {
-      const fields = req.query.fields.split(',').join(' ');
-      query = query.select(fields);
-    } else {
-      query = query.select('-__v');
-    }
-
-    // Pagination
-
-    const page = req.query.page * 1 || 1;
-    const limitNum = req.query.limit * 1 || 10;
-    const skipNum = (page - 1) * limitNum;
-
-    console.log(skipNum, limitNum);
-    query = query.skip(skipNum).limit(limitNum);
-
-    if (req.query.page) {
-      const dataSize = await User.countDocuments();
-      if (skipNum >= dataSize) throw new Error('This page does not exist');
-    }
-
-    const allUser = await query;
+    const queryTool = new QueryTool(User.find(), req.query)
+      .filter()
+      .sort()
+      .paginate();
+    const allUser = await queryTool.query;
 
     res.status(200).json({
       status: 'success',
@@ -102,8 +51,7 @@ exports.getUser = async (req, res) => {
 };
 exports.createUser = async (req, res) => {
   try {
-    // const newTour = new Tour({})
-    // newTour.save()
+
 
     const newUser = await User.create(req.body);
 
