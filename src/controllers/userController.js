@@ -1,5 +1,6 @@
 const User = require('../models/UserModel');
-const QueryTool = require('../utils/QueryTool');
+const QueryTool = require('../utils/queryTool');
+const asyncHdler = require('../utils/asyncHdler');
 
 // aliasing
 exports.topRec = (req, res, next) => {
@@ -9,49 +10,33 @@ exports.topRec = (req, res, next) => {
 
   next();
 };
-exports.getAllUser = async (req, res, next) => {
-  try {
-    const queryTool = new QueryTool(User.find(), req.query)
-      .filter()
-      .sort()
-      .paginate();
-    const allUser = await queryTool.query;
+exports.getAllUser = asyncHdler(async (req, res, next) => {
+  const queryTool = new QueryTool(User.find(), req.query)
+    .filter()
+    .sort()
+    .paginate();
+  const allUser = await queryTool.query;
 
-    res.status(200).json({
-      status: 'success',
-      results: allUser.length,
-      data: {
-        data: allUser
-      }
-    });
-  } catch (err) {
-    console.log('------------', err);
-    res.status(404).json({
-      status: 'fail',
-      message: err.message
-    });
-  }
-};
-exports.getUser = async (req, res) => {
-  try {
-    const user = await User.findById(req.params.id);
+  res.status(200).json({
+    status: 'success',
+    results: allUser.length,
+    data: {
+      data: allUser
+    }
+  });
+});
+exports.getUser = asyncHdler(async (req, res) => {
+  const user = await User.findById(req.params.id);
 
-    res.status(200).json({
-      status: 'success',
-      data: {
-        user
-      }
-    });
-  } catch (err) {
-    res.status(404).json({
-      status: 'fail',
-      message: err
-    });
-  }
-};
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user
+    }
+  });
+});
 exports.createUser = async (req, res) => {
   try {
-
     const newUser = await User.create(req.body);
 
     res.status(201).json({

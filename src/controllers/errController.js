@@ -1,11 +1,9 @@
-
-
 // final middleware error
 module.exports=((err, req, res, next) => {
-  console.log(err.stack);
-  const errCp = { ...err };
-  if (!errCp.statusCode) errCp.statusCode = 500;
-  if (!errCp.status) errCp.status = 'error';
+  // eslint-disable-next-line no-param-reassign
+  err.statusCode = err.statusCode || 500;
+  // eslint-disable-next-line no-param-reassign
+  err.status = err.status || 'error';
   res.status(err.statusCode).json({
     status: err.status,
     message: err.message
