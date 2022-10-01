@@ -1,9 +1,0 @@
-"filename", "language", "JavaScript", "comment", "blank", "total"
-"e:\demo\src\controllers\errController.js", "JavaScript", 8, 3, 1, 12
-"e:\demo\src\controllers\userController.js", "JavaScript", 75, 17, 12, 104
-"e:\demo\src\models\UserModel.js", "JavaScript", 60, 4, 8, 72
-"e:\demo\src\routes\userRouter.js", "JavaScript", 14, 0, 5, 19
-"e:\demo\src\utils\asyncHdler.js", "JavaScript", 3, 0, 1, 4
-"e:\demo\src\utils\customErr.js", "JavaScript", 9, 2, 5, 16
-"e:\demo\src\utils\queryTool.js", "JavaScript", 37, 0, 10, 47
-"Total", "-", 206, 26, 42, 274
