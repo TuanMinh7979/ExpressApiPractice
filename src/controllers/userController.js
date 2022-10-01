@@ -1,6 +1,7 @@
 const User = require('../models/UserModel');
 const QueryTool = require('../utils/queryTool');
 const asyncHdler = require('../utils/asyncHdler');
+const CustomErr = require('../utils/customErr');
 
 // aliasing
 exports.topRec = (req, res, next) => {
@@ -25,9 +26,16 @@ exports.getAllUser = asyncHdler(async (req, res, next) => {
     }
   });
 });
-exports.getUser = asyncHdler(async (req, res) => {
+exports.getUser = asyncHdler(async (req, res, next) => {
   const user = await User.findById(req.params.id);
 
+  if (!user) {
+    // bad
+    // throw new CustomErr('No user found ', 404);
+    // good
+    next(new CustomErr('User not found', 404));
+    return;
+  }
   res.status(200).json({
     status: 'success',
     data: {
@@ -35,8 +43,23 @@ exports.getUser = asyncHdler(async (req, res) => {
     }
   });
 });
+//---------
+// exports.createUser = asyncHdler(async (req, res) => {
+//   const newUser = await User.create(req.body);
+
+//   res.status(201).json({
+//     status: 'success',
+//     data: {
+//       user: newUser
+//     }
+//   });
+// });
+
 exports.createUser = async (req, res) => {
   try {
+    // const newTour = new Tour({})
+    // newTour.save()
+
     const newUser = await User.create(req.body);
 
     res.status(201).json({
@@ -52,38 +75,29 @@ exports.createUser = async (req, res) => {
     });
   }
 };
-exports.updateUser = async (req, res) => {
-  try {
-    const savedUser = await User.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true
-    });
 
-    res.status(200).json({
-      status: 'success',
-      data: {
-        savedUser
-      }
-    });
-  } catch (err) {
-    res.status(404).json({
-      status: 'fail',
-      message: err
-    });
-  }
-};
-exports.deleteUser = async (req, res) => {
-  try {
-    await User.findByIdAndDelete(req.params.id);
+//---------
+exports.updateUser = asyncHdler(async (req, res, next) => {
+  const savedUser = await User.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true
+  });
 
-    res.status(204).json({
-      status: 'success',
-      data: null
-    });
-  } catch (err) {
-    res.status(404).json({
-      status: 'fail',
-      message: err
-    });
+  if (!savedUser) {
+    next(new CustomErr('User not found', 404));
+    return;
   }
-};
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      savedUser
+    }
+  });
+});
+exports.deleteUser = asyncHdler(async (req, res, next) => {
+  const userToDel = await User.findByIdAndDelete(req.params.id);
+  if (!userToDel) {
+    next(new CustomErr('User not found', 404));
+  }
+});
