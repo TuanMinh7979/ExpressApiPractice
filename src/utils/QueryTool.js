@@ -23,11 +23,10 @@ class QueryTool {
     }
     return this;
   }
+  
   sort() {
     if (this.queryString.sort) {
       this.query = this.query.sort(this.queryString.sort);
-    } else {
-      // query = query.sort('-createdAt');
     }
     return this;
   }

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+
 const userSchema = new mongoose.Schema(
   {
     email: {
@@ -16,12 +17,23 @@ const userSchema = new mongoose.Schema(
       required: [true, 'Role is not be empty']
     },
     age: {
-      type: Number
+      type: Number,
+      validate: {
+        validator: val => val > 9,
+        message: 'Age {{VALUE}}must be gt 9'
+      }
     },
     createdAt: {
       type: Date,
       default: Date.now(),
       select: false
+    },
+    state: {
+      type: String,
+      enum: {
+        values: ['active', 'pendding'],
+        message: 'missing state'
+      }
     }
   },
 
@@ -36,21 +48,21 @@ userSchema.virtual('isLt20').get(function() {
 });
 
 userSchema.pre('save', function(next) {
-  //run after controller
+  // run after controller
   this.slug = slugify(this.email, { lower: true });
   console.log('-----mongo middleware-----', this);
   next();
 });
 
-//after save middle ware
+// after save middle ware
 userSchema.post('save', function(document, next) {
   console.log('after saved doc : ', document);
   next();
 });
 
-//query middle ware
+// query middle ware
 userSchema.pre('find', function(next) {
-  //this now is query
+  // this now is query
   this.find({ role: { $ne: 'admin' } });
   next();
 });
