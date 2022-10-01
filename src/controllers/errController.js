@@ -18,6 +18,7 @@ const sendErrProd = (err, res) => {
     });
   }
 };
+
 const sendErrDev = (err, res) => {
   if (err.isOperational) {
     res.status(err.statusCode).json({
