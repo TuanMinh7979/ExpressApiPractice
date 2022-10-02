@@ -1,17 +1,34 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+const validator = require('validator');
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema(
   {
     email: {
       type: String,
-      required: [true, 'Name is not be empty']
+      required: [true, 'Name is not be empty'],
+      unique: true,
+      validate: [validator.isEmail, 'Please provide a valid email']
     },
     slug: String,
     password: {
       type: String,
       required: [true, 'Password is not be empty']
     },
+    passwordConfirm: {
+      type: String,
+      required: [true, 'passwordConfirm is not be empty'],
+      validate: {
+        // eslint-disable-next-line object-shorthand
+        validator: function(val) {
+          console.log('--------------', val, this.password);
+          return val === this.password;
+        },
+        message: 'confirm password not match'
+      }
+    },
+
     role: {
       type: String,
       required: [true, 'Role is not be empty']
@@ -20,7 +37,7 @@ const userSchema = new mongoose.Schema(
       type: Number,
       validate: {
         validator: val => val > 9,
-        message: 'Age {{VALUE}}must be gt 9'
+        message: 'Age {{VALUE}} must be gt 9'
       }
     },
     createdAt: {
@@ -47,16 +64,16 @@ userSchema.virtual('isLt20').get(function() {
   return this.age < 20;
 });
 
-userSchema.pre('save', function(next) {
-  // run after controller
+userSchema.pre('save', async function(next) {
   this.slug = slugify(this.email, { lower: true });
-  console.log('-----mongo middleware-----', this);
+
+  this.password = await bcrypt.hash(this.password, 12);
+  this.passwordConfirm = undefined;
   next();
 });
 
 // after save middle ware
 userSchema.post('save', function(document, next) {
-  console.log('after saved doc : ', document);
   next();
 });
 

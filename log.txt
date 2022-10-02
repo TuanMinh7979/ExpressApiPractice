@@ -1,0 +1,2 @@
+opertional err , programing err
+unhandled rejection

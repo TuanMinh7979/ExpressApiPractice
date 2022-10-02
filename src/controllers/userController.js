@@ -43,7 +43,7 @@ exports.getUser = asyncHdler(async (req, res, next) => {
     }
   });
 });
-//---------
+
 // exports.createUser = asyncHdler(async (req, res) => {
 //   const newUser = await User.create(req.body);
 
@@ -55,26 +55,26 @@ exports.getUser = asyncHdler(async (req, res, next) => {
 //   });
 // });
 
-exports.createUser = async (req, res) => {
-  try {
-    // const newTour = new Tour({})
-    // newTour.save()
+// exports.createUser = async (req, res) => {
+//   try {
+//     // const newTour = new Tour({})
+//     // newTour.save()
 
-    const newUser = await User.create(req.body);
+//     const newUser = await User.create(req.body);
 
-    res.status(201).json({
-      status: 'success',
-      data: {
-        user: newUser
-      }
-    });
-  } catch (err) {
-    res.status(400).json({
-      status: 'fail',
-      message: err
-    });
-  }
-};
+//     res.status(201).json({
+//       status: 'success',
+//       data: {
+//         user: newUser
+//       }
+//     });
+//   } catch (err) {
+//     res.status(400).json({
+//       status: 'fail',
+//       message: err
+//     });
+//   }
+// };
 
 //---------
 exports.updateUser = asyncHdler(async (req, res, next) => {

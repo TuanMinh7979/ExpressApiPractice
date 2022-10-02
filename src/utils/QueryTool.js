@@ -11,7 +11,7 @@ class QueryTool {
 
     let queryStr = JSON.stringify(queryObj);
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
-    console.log(JSON.parse(queryStr));
+
 
     this.query.find(JSON.parse(queryStr));
 
@@ -36,7 +36,7 @@ class QueryTool {
     const limitNum = this.queryString.limit * 1 || 10;
     const skipNum = (page - 1) * limitNum;
 
-    console.log(skipNum, limitNum);
+
     this.query = this.query.skip(skipNum).limit(limitNum);
 
     return this;
