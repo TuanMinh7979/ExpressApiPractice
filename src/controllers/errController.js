@@ -20,10 +20,11 @@ const hdlValidationDBDError = error => {
 
 const sendErrProd = (err, res) => {
   if (err.isOperational) {
-
+    console.log('---------------', err);
     res.status(err.statusCode).json({
       status: err.status,
-      message: err.message
+      message: err.message,
+    
     });
   } else {
     res.status(500).json({
@@ -52,19 +53,18 @@ const sendErrDev = (err, res) => {
 };
 
 module.exports = (err, req, res, next) => {
-
-
   // eslint-disable-next-line no-param-reassign
-  // if (!err.statusCode) err.statusCode = 500;
-  // // eslint-disable-next-line no-param-reassign
+  if (!err.statusCode) err.statusCode = 500;
+  // eslint-disable-next-line no-param-reassign
   // if (!err.status) err.status = 'error';
 
+  console.log('>>>>>>>>>>>>', err.message);
   if (process.env.NODE_ENV.trim() === 'development') {
+    console.log('>>>>>>>>>>>>DEV', err.message);
     sendErrDev(err, res);
   } else if (process.env.NODE_ENV.trim() === 'prod') {
-    let error = { ...err, name: err.name };
-
-
+    let error = { ...err, name: err.name, message: err.message };
+    console.log('>>>>>>>>>>>>PROD', err.message);
     if (error.name === 'CastError') {
       error = hdlCastDBError(error);
     }

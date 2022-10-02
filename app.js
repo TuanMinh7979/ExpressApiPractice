@@ -12,7 +12,7 @@ app.use(morgan('dev'));
 // Route
 app.use('/api/v1/user', userRoute);
 app.all('*', (req, res, next) => {
-  next(new CustomErr('Rs not found', 404));
+  return next(new CustomErr('Rs not found', 404));
 });
 
 // final middleware error

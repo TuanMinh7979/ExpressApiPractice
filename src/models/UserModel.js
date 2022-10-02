@@ -14,7 +14,8 @@ const userSchema = new mongoose.Schema(
     slug: String,
     password: {
       type: String,
-      required: [true, 'Password is not be empty']
+      required: [true, 'Password is not be empty'],
+      select: false
     },
     passwordConfirm: {
       type: String,
@@ -84,5 +85,10 @@ userSchema.pre('find', function(next) {
   next();
 });
 
+// eslint-disable-next-line func-names
+userSchema.methods.checkLoginPassword = async function(inpPassword, realPass) {
+  const rs = await bcrypt.compare(inpPassword, realPass);
+  return rs;
+};
 const User = mongoose.model('User', userSchema);
 module.exports = User;
