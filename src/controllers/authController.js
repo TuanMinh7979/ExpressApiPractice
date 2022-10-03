@@ -3,6 +3,7 @@ const User = require('../models/UserModel');
 const QueryTool = require('../utils/queryTool');
 const asyncHdler = require('../utils/asyncHdler');
 const CustomErr = require('../utils/customErr');
+const { promisify } = require('util');
 
 const createToken = id =>
   jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -50,4 +51,30 @@ exports.login = asyncHdler(async (req, res, next) => {
     status: 'success',
     token
   });
+});
+
+exports.protect = asyncHdler(async (req, res, next) => {
+  let token = '';
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
+  ) {
+    token = req.headers.authorization.split(' ')[1];
+    console.log(token);
+  }
+
+  if (!token) {
+    next(new CustomErr('Login before', 401));
+    return;
+  }
+
+
+  console.log("-----------before-----------")
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+  console.log("-----------after-----------")
+
+  console.log(decoded);
+
+
+  next();
 });

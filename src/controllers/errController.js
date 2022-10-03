@@ -18,13 +18,17 @@ const hdlValidationDBDError = error => {
   return new CustomErr(message, 400);
 };
 
+const hdlJwtErr = error => {
+  
+  return new CustomErr('Invalid token, Please login again ', 401);
+};
+
 const sendErrProd = (err, res) => {
   if (err.isOperational) {
     console.log('---------------', err);
     res.status(err.statusCode).json({
       status: err.status,
-      message: err.message,
-    
+      message: err.message
     });
   } else {
     res.status(500).json({
@@ -71,6 +75,9 @@ module.exports = (err, req, res, next) => {
     if (error.code && error.code === 11000) error = hdlDuplicateDBError(error);
 
     if (error.name === 'ValidationError') error = hdlValidationDBDError(error);
+
+    if (error.name === 'JsonWebTokenError') error = hdlJwtErr(error);
+
     sendErrProd(error, res);
   }
 };

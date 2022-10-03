@@ -2,7 +2,6 @@ const express = require('express');
 const userController = require('../controllers/userController');
 const authController = require('../controllers/authController');
 
-
 const router = express.Router();
 router
   .route('/top-5-ntd')
@@ -11,7 +10,7 @@ router
 router.post('/signup', authController.signup);
 router.post('/login', authController.login);
 
-router.route('/').get(userController.getAllUser);
+router.route('/').get(authController.protect, userController.getAllUser);
 // .post(userController.createUser);
 
 router
