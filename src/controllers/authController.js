@@ -1,9 +1,9 @@
+const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const User = require('../models/UserModel');
-const QueryTool = require('../utils/queryTool');
+const QueryTool = require('../utils/QueryTool');
 const asyncHdler = require('../utils/asyncHdler');
 const CustomErr = require('../utils/customErr');
-const { promisify } = require('util');
 
 const createToken = id =>
   jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -59,6 +59,7 @@ exports.protect = asyncHdler(async (req, res, next) => {
     req.headers.authorization &&
     req.headers.authorization.startsWith('Bearer')
   ) {
+    // eslint-disable-next-line prefer-destructuring
     token = req.headers.authorization.split(' ')[1];
     console.log(token);
   }
@@ -68,13 +69,15 @@ exports.protect = asyncHdler(async (req, res, next) => {
     return;
   }
 
-
-  console.log("-----------before-----------")
+  console.log('-----------before-----------');
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-  console.log("-----------after-----------")
+  console.log('-----------after-----------');
 
-  console.log(decoded);
-
-
+  // check if user exist
+  const freshUser = await User.findById(decoded.id);
+  if (!freshUser) {
+    next(new CustomErr('sfsdf'));
+    return;
+  }
   next();
 });

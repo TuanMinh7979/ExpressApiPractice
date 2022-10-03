@@ -1,5 +1,5 @@
 const User = require('../models/UserModel');
-const QueryTool = require('../utils/queryTool');
+const QueryTool = require('../utils/QueryTool');
 const asyncHdler = require('../utils/asyncHdler');
 const CustomErr = require('../utils/customErr');
 

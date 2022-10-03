@@ -19,8 +19,11 @@ const hdlValidationDBDError = error => {
 };
 
 const hdlJwtErr = error => {
-  
   return new CustomErr('Invalid token, Please login again ', 401);
+};
+
+const hdlTokenExpireErr = error => {
+  return new CustomErr('Your token has expired, Please login again ', 401);
 };
 
 const sendErrProd = (err, res) => {
@@ -78,6 +81,7 @@ module.exports = (err, req, res, next) => {
 
     if (error.name === 'JsonWebTokenError') error = hdlJwtErr(error);
 
+    if (error.name === 'TokenExpiredError') error = hdlTokenExpireErr(error);
     sendErrProd(error, res);
   }
 };
