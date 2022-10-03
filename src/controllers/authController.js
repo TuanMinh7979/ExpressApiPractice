@@ -76,7 +76,7 @@ exports.protect = asyncHdler(async (req, res, next) => {
   // check if user exist
   const freshUser = await User.findById(decoded.id);
   if (!freshUser) {
-    next(new CustomErr('sfsdf'));
+    next(new CustomErr('the user of this token is no longer exist'));
     return;
   }
   next();

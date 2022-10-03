@@ -52,7 +52,8 @@ const userSchema = new mongoose.Schema(
         values: ['active', 'pendding'],
         message: 'missing state'
       }
-    }
+    },
+    passwordChangeAt: Date
   },
 
   {
@@ -89,6 +90,14 @@ userSchema.pre('find', function(next) {
 userSchema.methods.checkLoginPassword = async function(inpPassword, realPass) {
   const rs = await bcrypt.compare(inpPassword, realPass);
   return rs;
+};
+
+// change password after token issue
+userSchema.methods.changePasswordAfter = function(JWTimestamp) {
+  if (this.passwordChangeAt) {
+    console.log(this.passworkChangeAt, JWTimestamp);
+  }
+  return false;
 };
 const User = mongoose.model('User', userSchema);
 module.exports = User;
