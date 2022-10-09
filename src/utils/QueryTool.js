@@ -12,7 +12,6 @@ class QueryTool {
     let queryStr = JSON.stringify(queryObj);
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
 
-
     this.query.find(JSON.parse(queryStr));
 
     if (this.queryString.fields) {
@@ -23,7 +22,7 @@ class QueryTool {
     }
     return this;
   }
-  
+
   sort() {
     if (this.queryString.sort) {
       this.query = this.query.sort(this.queryString.sort);
@@ -35,7 +34,6 @@ class QueryTool {
     const page = this.queryString.page * 1 || 1;
     const limitNum = this.queryString.limit * 1 || 10;
     const skipNum = (page - 1) * limitNum;
-
 
     this.query = this.query.skip(skipNum).limit(limitNum);
 

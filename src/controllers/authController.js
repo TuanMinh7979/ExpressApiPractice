@@ -1,7 +1,7 @@
 const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const User = require('../models/UserModel');
-const QueryTool = require('../utils/QueryTool');
+const QueryTool = require('../utils/queryTool');
 const asyncHdler = require('../utils/asyncHdler');
 const CustomErr = require('../utils/customErr');
 
@@ -47,12 +47,14 @@ exports.login = asyncHdler(async (req, res, next) => {
   }
   // eslint-disable-next-line no-underscore-dangle
   const token = createToken(user._id);
+
   res.status(200).json({
     status: 'success',
     token
   });
 });
 
+// middle ware
 exports.protect = asyncHdler(async (req, res, next) => {
   let token = '';
   if (
@@ -71,6 +73,7 @@ exports.protect = asyncHdler(async (req, res, next) => {
 
   console.log('-----------before-----------');
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+  console.log(decoded);
   console.log('-----------after-----------');
 
   // check if user exist
@@ -79,5 +82,17 @@ exports.protect = asyncHdler(async (req, res, next) => {
     next(new CustomErr('the user of this token is no longer exist'));
     return;
   }
+
+  req.user = freshUser;
   next();
 });
+
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    console.log('_______________request.user');
+    console.log(req.user);
+    if (!roles.includes(req.user.role))
+      return next(new CustomErr(' you dont not have per'));
+    return next();
+  };
+};

@@ -1,5 +1,5 @@
 const User = require('../models/UserModel');
-const QueryTool = require('../utils/QueryTool');
+const QueryTool = require('../utils/queryTool');
 const asyncHdler = require('../utils/asyncHdler');
 const CustomErr = require('../utils/customErr');
 
@@ -100,4 +100,7 @@ exports.deleteUser = asyncHdler(async (req, res, next) => {
   if (!userToDel) {
     next(new CustomErr('User not found', 404));
   }
+  res.status(200).json({
+    status: 'success'
+  });
 });

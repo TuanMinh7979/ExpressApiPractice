@@ -32,7 +32,9 @@ const userSchema = new mongoose.Schema(
 
     role: {
       type: String,
-      required: [true, 'Role is not be empty']
+      enum: ['recruiter', 'applicant', 'admin'],
+      required: [true, 'Role is not be empty'],
+      default: 'applicant'
     },
     age: {
       type: Number,
